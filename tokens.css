@@ -1,0 +1,51 @@
+/* pekanga-shared/tokens.css
+ * Canonical Pekanga brand tokens. Source of truth: pekanga-school's
+ * src/app/globals.css, ported here unchanged (same names, same values) so
+ * existing var(--navy) etc. usage in any consuming app keeps working without
+ * a rename. Only additions: --coral-deep (a darker CTA fill for white-text
+ * buttons, previously hardcoded inline in a handful of places rather than
+ * named) and this file's existence as a single shared source, replacing
+ * per-repo copies that had already started to drift (see
+ * phase0_shared_architecture_audit.md).
+ *
+ * Usage: import this file once (e.g. in globals.css) and reference tokens as
+ * var(--navy), var(--coral), etc.
+ */
+
+:root {
+  /* Navy */
+  --navy: #1E3A5F;
+  --navy-deep: #0F2440;
+
+  /* Blue */
+  --blue: #1A5B8F;
+  --blue-mid: #2272B3;
+  --blue-light: #E8F3FB;
+
+  /* Coral — CTA/accent only. Never body text, background fills, or
+     decorative use. See tokens.d.ts for the same rule in comment form. */
+  --coral: #E8614D;
+  --coral-mid: #F0705A;
+  --coral-light: #FEF1EF;
+  --coral-deep: #C04535; /* darker fill for CTA buttons carrying white text */
+
+  /* Sand / gold */
+  --sand-gold: #C9A96E;
+  --gold: #C9A96E; /* alias, matches school's existing naming */
+  --gold-light: #FBF5E8;
+  --sand-white: #FAF8F4;
+  --off: #FAF8F4; /* alias, matches school's existing naming */
+
+  /* Neutrals */
+  --white: #FFFFFF;
+  --border: #D8E4EE;
+  --text: #1A2B3C;
+  --text-muted: #6B7E94;
+
+  /* Status (not for AI-risk-tier use — see tokens.d.ts riskTierColors,
+     which deliberately avoids green and purple per brand rule) */
+  --red: #C0392B;
+  --red-light: #FDECEA;
+  --amber: #C9A96E;
+  --amber-light: #FBF5E8;
+}
