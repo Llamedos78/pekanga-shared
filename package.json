@@ -2,7 +2,7 @@
   "name": "pekanga-shared",
   "version": "0.2.0",
   "private": true,
-  "description": "Shared brand tokens and headless admin UI for Pekanga products (School, Advisor, College). Not published to npm — installed via github: URL.",
+  "description": "Shared brand tokens and headless admin UI for Pekanga products (School, Advisor, College). Not published to npm \u2014 installed via github: URL.",
   "type": "module",
   "main": "./tokens.js",
   "types": "./tokens.d.ts",
@@ -23,5 +23,13 @@
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.5.0"
   }
 }

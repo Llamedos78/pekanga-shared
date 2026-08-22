@@ -75,6 +75,10 @@ export interface AdminTreeDashboardProps {
    */
   onSearch?: (query: string) => void;
   searchPlaceholder?: string;
+  /** Noun for the result count next to the search box. Defaults to 'result'. */
+  itemNoun?: string;
+  /** Plural of itemNoun, when it isn't just itemNoun + 's'. */
+  itemNounPlural?: string;
 
   summaryCards?: AdminSummaryCard[];
   loading?: boolean;
@@ -132,20 +136,26 @@ function nodeMatches(node: TreeNode, q: string): boolean {
   return false;
 }
 
-/** Keeps any node that matches, or that has a descendant which matches. */
+/**
+ * Keeps any node that matches, or that has a descendant which matches.
+ *
+ * A node that matches on its own keeps ALL of its children, not just the
+ * matching ones — searching for a school by name should show you that school
+ * and everyone under it, not that school with an empty list.
+ */
 function filterTree(nodes: TreeNode[], q: string): TreeNode[] {
   const out: TreeNode[] = [];
   for (const node of nodes) {
+    if (nodeMatches(node, q)) {
+      out.push(node);
+      continue;
+    }
     const kids = node.children ? filterTree(node.children, q) : undefined;
-    if (nodeMatches(node, q) || (kids && kids.length > 0)) {
-      out.push(kids ? { ...node, children: kids } : node);
+    if (kids && kids.length > 0) {
+      out.push({ ...node, children: kids });
     }
   }
   return out;
-}
-
-function countNodes(nodes: TreeNode[]): number {
-  return nodes.reduce((n, node) => n + 1 + (node.children ? countNodes(node.children) : 0), 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -318,6 +328,8 @@ export default function AdminTreeDashboard({
   data,
   onSearch,
   searchPlaceholder = 'Search...',
+  itemNoun = 'result',
+  itemNounPlural,
   summaryCards,
   loading,
   emptyState,
@@ -384,7 +396,7 @@ export default function AdminTreeDashboard({
     return filterTree(data, query.trim().toLowerCase());
   }, [data, query, onSearch]);
 
-  const visibleCount = countNodes(visible);
+  const visibleCount = visible.length;
 
   return (
     <div style={{ fontFamily: FONT }}>
@@ -434,7 +446,7 @@ export default function AdminTreeDashboard({
           }}
         />
         <span style={{ fontSize: 12, color: tokens.textMuted, whiteSpace: 'nowrap' }}>
-          {visibleCount} {visibleCount === 1 ? 'result' : 'results'}
+          {visibleCount} {visibleCount === 1 ? itemNoun : itemNounPlural ?? `${itemNoun}s`}
         </span>
         {headerAction}
       </div>
