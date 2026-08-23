@@ -13,6 +13,14 @@
  */
 
 :root {
+  /* Typography. Added alongside the Explore Careers build after tracing
+     Advisor's "font-scale inconsistency" to these two vars being referenced
+     18 times across its Visual* components but never defined anywhere in
+     Advisor — not here, not in its own globals.css. School defined them
+     locally; this is the fix, at the one place both apps already import. */
+  --font-heading: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Sora', system-ui, sans-serif;
+
   /* Navy */
   --navy: #1E3A5F;
   --navy-deep: #0F2440;

@@ -12,13 +12,19 @@
       "default": "./tokens.js"
     },
     "./tokens.css": "./tokens.css",
-    "./AdminTreeDashboard": "./AdminTreeDashboard.tsx"
+    "./AdminTreeDashboard": "./AdminTreeDashboard.tsx",
+    "./CareerCard": "./CareerCard.tsx",
+    "./Sectors": "./Sectors.tsx",
+    "./apprenticeshipMatch": "./apprenticeshipMatch.ts"
   },
   "files": [
     "tokens.js",
     "tokens.d.ts",
     "tokens.css",
-    "AdminTreeDashboard.tsx"
+    "AdminTreeDashboard.tsx",
+    "CareerCard.tsx",
+    "Sectors.tsx",
+    "apprenticeshipMatch.ts"
   ],
   "peerDependencies": {
     "react": ">=18",
