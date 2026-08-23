@@ -99,6 +99,23 @@ export interface MatchingApprenticeshipsResult {
 }
 
 /**
+ * apprenticeship-search's `q` matches title, course_title, AND
+ * employer_name — right for the general-purpose Apprenticeships search
+ * page (someone deliberately searching an employer by name), wrong for
+ * career-specific matching. Confirmed via real data: an "Architect" search
+ * surfaced an unrelated Dental Nurse apprenticeship because its employer is
+ * literally named "Smile Architect" — the vacancy has nothing to do with
+ * architecture, it just works there... at a dental practice with a pun
+ * name. Re-checking against title/course_title only, client-side, is
+ * cheaper and safer than changing the shared search function itself, which
+ * would regress deliberate employer-name search on the standalone page.
+ */
+function matchesTitleOrCourse(listing: ApprenticeshipListing, terms: string[]): boolean {
+  const haystack = `${listing.title ?? ''} ${listing.course_title ?? ''}`.toLowerCase();
+  return terms.some((term) => haystack.includes(term.toLowerCase()));
+}
+
+/**
  * Fetches apprenticeship listings matching a specific career, merged and
  * deduped across the career's search terms, sorted newest-first, capped to
  * `limit` (default 4 — within Neil's 3-5 inline-display range; the caller
@@ -120,7 +137,9 @@ export async function fetchMatchingApprenticeships(opts: {
   const byRef = new Map<string, ApprenticeshipListing>();
   for (const list of results) {
     for (const listing of list) {
-      if (!byRef.has(listing.vacancy_reference)) byRef.set(listing.vacancy_reference, listing);
+      if (!byRef.has(listing.vacancy_reference) && matchesTitleOrCourse(listing, searchTerms)) {
+        byRef.set(listing.vacancy_reference, listing);
+      }
     }
   }
 

@@ -16,7 +16,8 @@
     "./CareerCard": "./CareerCard.tsx",
     "./Sectors": "./Sectors.tsx",
     "./apprenticeshipMatch": "./apprenticeshipMatch.ts",
-    "./ApprenticeshipMatches": "./ApprenticeshipMatches.tsx"
+    "./ApprenticeshipMatches": "./ApprenticeshipMatches.tsx",
+    "./SectorPicker": "./SectorPicker.tsx"
   },
   "files": [
     "tokens.js",
@@ -26,7 +27,8 @@
     "CareerCard.tsx",
     "Sectors.tsx",
     "apprenticeshipMatch.ts",
-    "ApprenticeshipMatches.tsx"
+    "ApprenticeshipMatches.tsx",
+    "SectorPicker.tsx"
   ],
   "peerDependencies": {
     "react": ">=18",
