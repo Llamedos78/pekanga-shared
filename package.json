@@ -15,7 +15,8 @@
     "./AdminTreeDashboard": "./AdminTreeDashboard.tsx",
     "./CareerCard": "./CareerCard.tsx",
     "./Sectors": "./Sectors.tsx",
-    "./apprenticeshipMatch": "./apprenticeshipMatch.ts"
+    "./apprenticeshipMatch": "./apprenticeshipMatch.ts",
+    "./ApprenticeshipMatches": "./ApprenticeshipMatches.tsx"
   },
   "files": [
     "tokens.js",
@@ -24,7 +25,8 @@
     "AdminTreeDashboard.tsx",
     "CareerCard.tsx",
     "Sectors.tsx",
-    "apprenticeshipMatch.ts"
+    "apprenticeshipMatch.ts",
+    "ApprenticeshipMatches.tsx"
   ],
   "peerDependencies": {
     "react": ">=18",
