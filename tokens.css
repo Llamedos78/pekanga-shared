@@ -56,4 +56,10 @@
   --red-light: #FDECEA;
   --amber: #C9A96E;
   --amber-light: #FBF5E8;
+
+  /* AI-risk-tier "displaces" only. Distinct from --amber/--amber-light
+     above -- those fail 4.5:1 against each other (2.06:1). Matches
+     pekanga-school's --risk-amber/--risk-amber-light. */
+  --risk-amber: #A03D00;
+  --risk-amber-light: #FFF3E0;
 }

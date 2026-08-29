@@ -21,6 +21,9 @@ export interface PekangaTokens {
   redLight: string;
   amber: string;
   amberLight: string;
+  /** Distinct from amber/amberLight -- those fail 4.5:1 against each other. */
+  riskAmber: string;
+  riskAmberLight: string;
 }
 
 export const tokens: PekangaTokens;

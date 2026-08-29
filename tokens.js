@@ -31,6 +31,12 @@ export const tokens = {
   redLight: '#FDECEA',
   amber: '#C9A96E',
   amberLight: '#FBF5E8',
+
+  // Distinct from `amber`/`amberLight` above -- those fail 4.5:1 against
+  // each other (2.06:1) at the sizes risk-tier badge text is actually
+  // rendered at. Matches pekanga-school's --risk-amber/--risk-amber-light.
+  riskAmber: '#A03D00',
+  riskAmberLight: '#FFF3E0',
 };
 
 // Five-tier AI-risk-tier colour mapping. Deliberately avoids green (brand
@@ -42,7 +48,9 @@ export const tokens = {
 export const riskTierColors = {
   resistant: { text: tokens.navy, bg: tokens.blueLight },
   transforms: { text: tokens.blueMid, bg: tokens.blueLight },
-  displaces: { text: tokens.sandGold, bg: tokens.goldLight },
+  // Was tokens.sandGold on tokens.goldLight (2.06:1, fails WCAG AA) --
+  // see riskAmber/riskAmberLight above.
+  displaces: { text: tokens.riskAmber, bg: tokens.riskAmberLight },
   replaces: { text: tokens.red, bg: tokens.redLight },
   creates: { text: tokens.navyDeep, bg: tokens.sandWhite },
 };
