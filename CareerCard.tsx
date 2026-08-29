@@ -104,7 +104,7 @@ function DemandPill({ demand, careerTitle }: { demand: CareerCardDemand; careerT
 function SalaryRow({ salary }: { salary: CareerCardSalary }) {
   return (
     <div style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'nowrap' }}>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, color: tokens.textMuted, fontFamily: FONT }}>Entry</span>
           <span style={{ fontSize: 15, fontWeight: 700, color: tokens.navy, whiteSpace: 'nowrap', fontFamily: FONT }}>{salary.entry}</span>

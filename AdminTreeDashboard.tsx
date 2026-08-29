@@ -180,6 +180,7 @@ function TreeRow({
   return (
     <div style={{ marginLeft: depth === 0 ? 0 : 22 }}>
       <div
+        className="ptd-row"
         style={{
           background: tokens.white,
           border: `1px solid ${tokens.border}`,
@@ -232,7 +233,7 @@ function TreeRow({
           />
         )}
 
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="ptd-name" style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 700, color: tokens.navy, fontSize: 15, marginBottom: 3 }}>{node.label}</div>
           {node.meta && node.meta.length > 0 && (
             <div style={{ fontSize: 12, color: tokens.textMuted, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -271,7 +272,7 @@ function TreeRow({
         </div>
 
         {statEntries.length > 0 && (
-          <div style={{ display: 'flex', gap: 24, flexShrink: 0, textAlign: 'center' }}>
+          <div className="ptd-stats" style={{ display: 'flex', gap: 24, flexShrink: 0, textAlign: 'center' }}>
             {statEntries.map(([k, v]) => (
               <div key={k}>
                 <div
@@ -291,7 +292,7 @@ function TreeRow({
         )}
 
         {node.actions && node.actions.length > 0 && (
-          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+          <div className="ptd-actions" style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
             {node.actions.map((a) => (
               <button key={a.label} onClick={() => a.onClick(node)} style={actionStyle(a.variant)}>
                 {a.label}
@@ -400,6 +401,24 @@ export default function AdminTreeDashboard({
 
   return (
     <div style={{ fontFamily: FONT }}>
+      {/* TreeRow lays expander + status dot + name on one flex line, then
+          fixed-width stats and actions groups (flexShrink: 0) on the same
+          line. Below ~640px those fixed groups alone exceed the row's
+          width, so the flexible name column (flex: 1, minWidth: 0) was
+          collapsing to a literal 0px box and its text rendered on top of
+          the stats/actions instead of wrapping. !important is required
+          because the row/name/stats/actions divs set `flex`/`display`
+          inline above -- inline styles beat a plain class selector at any
+          specificity, media query or not, so overriding them from here
+          needs !important regardless of breakpoint. */}
+      <style>{`
+        @media (max-width: 640px) {
+          .ptd-row { flex-wrap: wrap; }
+          .ptd-name { flex: 1 1 160px !important; min-width: 160px !important; }
+          .ptd-stats { flex-basis: 100% !important; justify-content: flex-start !important; margin-top: 8px !important; }
+          .ptd-actions { flex-basis: 100% !important; margin-top: 8px !important; }
+        }
+      `}</style>
       <h1 style={{ fontFamily: SERIF, fontSize: 26, color: tokens.navy, margin: '0 0 20px', fontWeight: 400 }}>{title}</h1>
 
       {summaryCards && summaryCards.length > 0 && (

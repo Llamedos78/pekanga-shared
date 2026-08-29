@@ -48,7 +48,7 @@
   --white: #FFFFFF;
   --border: #D8E4EE;
   --text: #1A2B3C;
-  --text-muted: #6B7E94;
+  --text-muted: #5D7086;
 
   /* Status (not for AI-risk-tier use — see tokens.d.ts riskTierColors,
      which deliberately avoids green and purple per brand rule) */

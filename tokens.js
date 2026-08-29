@@ -25,7 +25,7 @@ export const tokens = {
   white: '#FFFFFF',
   border: '#D8E4EE',
   text: '#1A2B3C',
-  textMuted: '#6B7E94',
+  textMuted: '#5D7086',
 
   red: '#C0392B',
   redLight: '#FDECEA',
