@@ -79,7 +79,7 @@ function DemandPill({ demand, careerTitle }: { demand: CareerCardDemand; careerT
         <span
           style={{
             fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20,
-            background: isHigh ? tokens.coral : tokens.blueMid, color: tokens.white,
+            background: isHigh ? tokens.coralDeep : tokens.blueMid, color: tokens.white,
             display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: FONT,
           }}
         >
@@ -115,7 +115,7 @@ function SalaryRow({ salary }: { salary: CareerCardSalary }) {
         </div>
         {salary.topEarner ? (
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, color: tokens.sandGold, fontFamily: FONT }}>Top</span>
+            <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, color: tokens.textMuted, fontFamily: FONT }}>Top</span>
             <span style={{ fontSize: 15, fontWeight: 700, color: tokens.navy, whiteSpace: 'nowrap', fontFamily: FONT }}>£{salary.topEarner.toLocaleString('en-GB')}+</span>
           </div>
         ) : null}
