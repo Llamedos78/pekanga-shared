@@ -48,7 +48,14 @@
   --white: #FFFFFF;
   --border: #D8E4EE;
   --text: #1A2B3C;
-  --text-muted: #5D7086;
+  /* Darkened from #5D7086 (2026-08-30): that value passed 4.5:1 against
+     white and Sand White but only reached 3.93:1 against --border
+     (#D8E4EE) — a background this token is used against for badge/chip
+     text (e.g. pekanga-school's employer-type chips). #526676 clears all
+     three simultaneously (--border is the strictest of the three, so
+     nothing else was traded off): 4.62:1 vs --border, 5.96:1 vs white,
+     5.62:1 vs Sand White. */
+  --text-muted: #526676;
 
   /* Status (not for AI-risk-tier use — see tokens.d.ts riskTierColors,
      which deliberately avoids green and purple per brand rule) */
