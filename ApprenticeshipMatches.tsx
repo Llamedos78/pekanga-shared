@@ -95,7 +95,7 @@ export default function ApprenticeshipMatches({ careerTitle, supabaseUrl, anonKe
             {l.employer_name ? <div style={{ fontSize: 12, color: inkMuted, marginBottom: 6 }}>{l.employer_name}</div> : null}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
               {l.apprenticeship_level ? (
-                <span style={{ fontSize: 10, fontWeight: 600, color: tokens.coral, background: tokens.coralLight, padding: '2px 8px', borderRadius: 20, textTransform: 'capitalize' }}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: tokens.coralDeep, background: tokens.coralLight, padding: '2px 8px', borderRadius: 20, textTransform: 'capitalize' }}>
                   {l.apprenticeship_level}
                 </span>
               ) : null}
