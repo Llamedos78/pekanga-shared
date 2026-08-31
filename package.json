@@ -17,7 +17,8 @@
     "./Sectors": "./Sectors.tsx",
     "./apprenticeshipMatch": "./apprenticeshipMatch.ts",
     "./ApprenticeshipMatches": "./ApprenticeshipMatches.tsx",
-    "./SectorPicker": "./SectorPicker.tsx"
+    "./SectorPicker": "./SectorPicker.tsx",
+    "./LocationRadiusSearch": "./LocationRadiusSearch.tsx"
   },
   "files": [
     "tokens.js",
@@ -28,7 +29,8 @@
     "Sectors.tsx",
     "apprenticeshipMatch.ts",
     "ApprenticeshipMatches.tsx",
-    "SectorPicker.tsx"
+    "SectorPicker.tsx",
+    "LocationRadiusSearch.tsx"
   ],
   "peerDependencies": {
     "react": ">=18",
