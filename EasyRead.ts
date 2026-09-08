@@ -16,102 +16,31 @@
 // package: pure text in, structured data/text out. No state, no auth, no
 // network call, no DB access.
 //
-// ═══════════════════════════════════════════════════════════════════════
-// HARD REQUIREMENT — NOT OPTIONAL, NOT A STYLE PREFERENCE. Read before
-// wiring this into any screen. A PR that wires buildEasyReadPrompt's output
-// into a live call path MUST NOT MERGE without this condition met:
-//
-//   buildEasyReadPrompt's output must never travel from the browser to
-//   claude-proxy as a raw client-composed `systemPrompt`.
-//
-// It must instead go through its own dedicated server-side Edge Function —
-// same shape as career-tagging-report: the browser sends structured inputs
-// (source text + glossary) only, and the server builds the actual prompt
-// sent to the model.
-//
-// Why this is a hard gate, not a preference: pekanga-school/src/lib/api.ts
-// (lines ~143-146) documents that claude-proxy used to accept an arbitrary
-// client-supplied systemPrompt string, that this was identified as a
-// prompt-injection exposure in the Phase 0 architecture audit, and that it
-// was deliberately closed off for career-tagging-report for exactly that
-// reason. Chat.tsx/callPekanAPI still use the old client-composed-prompt
-// path for free-form chat — that is a known, accepted exception for chat,
-// NOT a precedent to copy here. Easy Read has no such exception: reusing
-// that path for Easy Read reopens the same exposure the audit closed.
-//
-// Wiring-PR checklist (all must be true before merge):
-//   [ ] Source text + glossary are sent to the server as structured fields,
-//       never as an assembled prompt string.
-//   [ ] The system prompt (built from buildEasyReadPrompt's logic) is
-//       constructed server-side, inside the new Edge Function — not in
-//       browser code, not passed through as a `systemPrompt` param.
-//   [ ] The new Edge Function is a distinct endpoint from claude-proxy's
-//       generic systemPrompt-accepting path (career-tagging-report is the
-//       reference implementation to follow).
-// ═══════════════════════════════════════════════════════════════════════
+// buildEasyReadPrompt used to live here. Moved out (2026-09-08) to
+// pekanga-school/supabase/functions/_shared/easyReadPrompt.ts: Edge
+// Functions run on Deno and import from supabase/functions/_shared/, not
+// from a package pulled in as a git dependency, so it couldn't stay here
+// and still be usable from a server-side Edge Function. It is deliberately
+// NOT re-exported from this package — see that file's HARD REQUIREMENT
+// comment for why (browser code must never compose the Easy Read system
+// prompt itself). checkEasyReadCompliance and splitIntoSymbolUnits stay
+// here: they run against already-rendered text and have legitimate
+// client-side (and future server-side) callers.
 
-// ── PLAIN ENGLISH PROMPT ────────────────────────────────────────────────
+// ── COMPLIANCE CHECK ────────────────────────────────────────────────────
 
+// Still needed here even though buildEasyReadPrompt (its other consumer)
+// moved out: checkEasyReadCompliance's own glossary param is the same
+// shape, since a caller checking rewritten text and a caller building the
+// rewrite prompt are working from the same term/definition list. Duplicated
+// (not imported) into easyReadPrompt.ts rather than shared across the
+// Deno/npm boundary that split exists to respect.
 export interface EasyReadGlossaryEntry {
   /** The difficult word or phrase as it appears in the source text. */
   term: string;
   /** A short, plain-English definition — Mencap: "a 'dictionary' or 'list of useful words'". */
   definition: string;
 }
-
-export interface EasyReadPromptOptions {
-  /**
-   * Terms the source text is expected to use that can't be simplified away
-   * (a qualification name, a named framework) — each gets an inline
-   * definition instead of being silently reworded, per "Using plain
-   * English": "If you need to use difficult words, include a 'dictionary'
-   * or 'list of useful words' to explain them."
-   */
-  glossary?: EasyReadGlossaryEntry[];
-  /** e.g. "This is for a 16-18 year old college student." Mencap: "Remember that you are writing for adults" — the rewrite must stay age-appropriate, not childish. */
-  audienceNote?: string;
-}
-
-/**
- * Builds the system prompt an LLM-backed rewrite endpoint should use to turn
- * arbitrary source text (a report section, a career detail blurb, a chat
- * reply) into Easy Read, following Mencap's guidelines. Returns a prompt
- * string only — this function makes no network call itself (see the
- * HEADLESS note above).
- */
-export function buildEasyReadPrompt(sourceText: string, options: EasyReadPromptOptions = {}): string {
-  const { glossary = [], audienceNote } = options;
-
-  const glossaryBlock = glossary.length
-    ? `\n\nThese words cannot be simplified away. Keep them, but define each one the first time it appears, in brackets, in plain English:\n${glossary
-        .map((g) => `- "${g.term}": ${g.definition}`)
-        .join('\n')}`
-    : '';
-
-  const audienceBlock = audienceNote ? `\n\nAudience: ${audienceNote}` : '';
-
-  return `You are rewriting text into Easy Read, following Mencap's published guidelines ("Am I making myself clear? Mencap's guidelines for accessible writing"). Apply these rules exactly:
-
-1. Plain English is the minimum standard. Cut unnecessary detail. Present the important information in a logical sequence, one step at a time.
-2. Write as you would speak. Do not use jargon, unnecessary technical detail, or abbreviations — spell things out (e.g. "for example", not "e.g."; "do not", not "don't").
-3. Keep sentences short: one main idea per sentence, roughly 10-16 words. If a sentence uses a comma or "and" to join two ideas, split it into two sentences.
-4. Use simple punctuation only: full stops between ideas. Avoid semicolons, colons, and hyphens used as punctuation. Avoid sentences broken up with several commas.
-5. Use active, personal language. Talk directly to the reader using "you" and "we" rather than passive constructions.
-6. Be consistent: once you pick a word for something, keep using that exact word for it throughout, even if it feels repetitive. Do not swap in a synonym for variety.
-7. Always use the digit, not the word, for numbers — even small ones ("3", not "three"). Avoid percentages and large exact numbers; prefer "a few" or "many" over a precise figure when the exact number is not essential.
-8. Write for an adult reader. The result must not read as childish or patronising — a mainstream reader should also find it clear, not simplistic.
-9. Any word that cannot be avoided and might be unfamiliar should be explained inline in plain English the first time it is used.
-10. Each sentence should express one complete, self-contained idea, because each will later be paired one-to-one with a single symbol or image (Mencap: "Some people like to use an image for each main idea or paragraph") — do not write a sentence that depends on the sentence before it to make sense on its own.
-
-Output only the rewritten text: one idea per line, no headings, no markdown, no commentary.${glossaryBlock}${audienceBlock}
-
-Text to rewrite:
-"""
-${sourceText}
-"""`;
-}
-
-// ── COMPLIANCE CHECK ────────────────────────────────────────────────────
 
 export type EasyReadRule =
   | 'sentence-too-long'
@@ -128,6 +57,15 @@ export interface EasyReadIssue {
   detail: string;
   /** The offending sentence or token. */
   excerpt: string;
+  /**
+   * True when this rule is a heuristic whose output needs a human (or LLM)
+   * pass to confirm before acting on it, rather than a rule that can be
+   * trusted at face value. Currently only 'possible-passive-voice' sets
+   * this — its regex (a be-verb + any "-ed" word) matches plain adjectives
+   * ("is excited") and misses irregular participles ("was given"), so it
+   * both over- and under-fires. Not set on other rules.
+   */
+  advisory?: boolean;
 }
 
 const NUMBER_WORDS = [
@@ -136,6 +74,32 @@ const NUMBER_WORDS = [
   'eighteen', 'nineteen', 'twenty', 'thirty', 'forty', 'fifty', 'sixty',
   'seventy', 'eighty', 'ninety', 'hundred', 'thousand',
 ];
+
+// Diagnostic finding (2026-09-08, Visual Explore false-positive audit): a
+// number-word inside a hyphenated compound is an idiom, not a numeral
+// Mencap wants digitised — "one-to-one" (mentoring), "one-off" (fees),
+// "twenty-four-seven" etc. \b matches on either side of a hyphen (it's a
+// non-word character), so the un-patched regex flags these. This set lists
+// the specific hyphenated compounds seen in this codebase's content so far;
+// it is not a general hyphen-blindness fix (that would also silently
+// swallow genuine cases like "two - three days").
+const HYPHENATED_NUMBER_IDIOMS = ['one-to-one', 'one-off', 'twenty-four-seven'];
+
+// Diagnostic finding (2026-09-08, Visual Explore false-positive audit): with
+// an empty glossary, 15 of 16 possible-jargon flags in a 20-string hand-
+// reviewed sample were false positives. Breakdown: "AI" (12 hits) is the
+// product's own core, already-explained term (see RiskModal.tsx); "UK" (2
+// hits) is universally understood, especially in a UK-schools product;
+// "ONS" and "ASHE" both self-define inline in the same string
+// ("Office for National Statistics (ONS)", "Annual Survey of Hours and
+// Earnings (ASHE)") — the checker has no way to see that. "PDF" wasn't in
+// the 20-string sample but was flagged in the separate rule-7 census
+// ("Save as PDF") and is equally near-universally known. This is not a
+// general-purpose stoplist; it only covers terms confirmed to
+// false-positive against this codebase's actual copy. A caller with a
+// domain-specific glossary should still pass it — this list is merged
+// with, not a replacement for, the `glossary` parameter.
+const DEFAULT_JARGON_ALLOWLIST = ['AI', 'PDF', 'UK', 'ONS', 'ASHE'];
 
 // Common passive-voice shape: a form of "to be" followed by a past
 // participle ("was created", "is required", "were given"). A heuristic, not
@@ -162,7 +126,10 @@ function countWords(sentence: string): number {
  */
 export function checkEasyReadCompliance(text: string, glossary: EasyReadGlossaryEntry[] = []): EasyReadIssue[] {
   const issues: EasyReadIssue[] = [];
-  const knownTerms = new Set(glossary.map((g) => g.term.toLowerCase()));
+  const knownTerms = new Set([
+    ...glossary.map((g) => g.term.toLowerCase()),
+    ...DEFAULT_JARGON_ALLOWLIST.map((t) => t.toLowerCase()),
+  ]);
 
   for (const sentence of splitSentences(text)) {
     const wordCount = countWords(sentence);
@@ -198,12 +165,13 @@ export function checkEasyReadCompliance(text: string, glossary: EasyReadGlossary
         rule: 'possible-passive-voice',
         detail: `Possibly passive voice. Mencap: "Use active and personal language."`,
         excerpt: sentence,
+        advisory: true,
       });
     }
 
     for (const word of NUMBER_WORDS) {
       const re = new RegExp(`\\b${word}\\b`, 'i');
-      if (re.test(sentence)) {
+      if (re.test(sentence) && !HYPHENATED_NUMBER_IDIOMS.some((idiom) => new RegExp(`\\b${idiom}\\b`, 'i').test(sentence) && idiom.includes(word))) {
         issues.push({
           rule: 'number-as-word',
           detail: `Uses "${word}" as a word. Mencap: "Always use the number and not the word even for small numbers."`,
@@ -267,10 +235,11 @@ const STOPWORDS = new Set([
 
 /**
  * Splits Easy Read text (ideally already one-idea-per-sentence, per
- * buildEasyReadPrompt's output contract) into discrete units suited to
- * one-symbol-per-unit pairing, matching Mencap's "Link together words and
- * pictures" guidance: place one image alongside each main idea, not one
- * image per word ("Don't use too many symbols").
+ * buildEasyReadPrompt's output contract — now in
+ * pekanga-school/supabase/functions/_shared/easyReadPrompt.ts) into
+ * discrete units suited to one-symbol-per-unit pairing, matching Mencap's
+ * "Link together words and pictures" guidance: place one image alongside
+ * each main idea, not one image per word ("Don't use too many symbols").
  */
 export function splitIntoSymbolUnits(text: string): EasyReadUnit[] {
   return splitSentences(text).map((sentence) => {
