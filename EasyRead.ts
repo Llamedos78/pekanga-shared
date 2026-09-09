@@ -99,7 +99,15 @@ const HYPHENATED_NUMBER_IDIOMS = ['one-to-one', 'one-off', 'twenty-four-seven'];
 // false-positive against this codebase's actual copy. A caller with a
 // domain-specific glossary should still pass it — this list is merged
 // with, not a replacement for, the `glossary` parameter.
-const DEFAULT_JARGON_ALLOWLIST = ['AI', 'PDF', 'UK', 'ONS', 'ASHE'];
+//
+// GCSE and UCAS added 2026-09-09: live-tested via easy-read-report against
+// real progression-route source text, both flagged as jargon on every
+// pass even when spelled out inline by the model ("General Certificate of
+// Secondary Education, or GCSE") — the checker has no way to credit an
+// inline expansion the way it credits a glossary entry. Both terms are
+// near-universally understood in a UK-schools careers product, same
+// rationale as the original five.
+const DEFAULT_JARGON_ALLOWLIST = ['AI', 'PDF', 'UK', 'ONS', 'ASHE', 'GCSE', 'UCAS'];
 
 // Common passive-voice shape: a form of "to be" followed by a past
 // participle ("was created", "is required", "were given"). A heuristic, not
