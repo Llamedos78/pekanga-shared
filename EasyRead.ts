@@ -107,7 +107,21 @@ const HYPHENATED_NUMBER_IDIOMS = ['one-to-one', 'one-off', 'twenty-four-seven'];
 // inline expansion the way it credits a glossary entry. Both terms are
 // near-universally understood in a UK-schools careers product, same
 // rationale as the original five.
-const DEFAULT_JARGON_ALLOWLIST = ['AI', 'PDF', 'UK', 'ONS', 'ASHE', 'GCSE', 'UCAS'];
+//
+// Batch added 2026-09-13: consolidated from the careers-content expansion
+// project (100 → ~215 careers, sourced from National Careers Service
+// profiles). Same failure mode as GCSE/UCAS above — each is a real
+// qualification body, professional body, broadcaster or organisation name
+// that gets spelled out inline by the model but still flags, because the
+// checker can't credit an inline expansion. Grouped by domain rather than
+// per-batch: NATO, PE, CISI, TV, BBC, ITV, BECTU, NHS, DNA, BASIS, HND,
+// CSCS, MCS, BFI, ACCA, ICAEW, AIA, ICAS, CIPFA, IT, CAD, CCNSG, TSLI, MRI.
+const DEFAULT_JARGON_ALLOWLIST = [
+  'AI', 'PDF', 'UK', 'ONS', 'ASHE', 'GCSE', 'UCAS',
+  'NATO', 'PE', 'CISI', 'TV', 'BBC', 'ITV', 'BECTU', 'NHS', 'DNA', 'BASIS',
+  'HND', 'CSCS', 'MCS', 'BFI', 'ACCA', 'ICAEW', 'AIA', 'ICAS', 'CIPFA', 'IT',
+  'CAD', 'CCNSG', 'TSLI', 'MRI',
+];
 
 // Common passive-voice shape: a form of "to be" followed by a past
 // participle ("was created", "is required", "were given"). A heuristic, not
