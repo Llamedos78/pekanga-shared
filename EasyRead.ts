@@ -150,7 +150,9 @@ export function checkEasyReadCompliance(text: string, glossary: EasyReadGlossary
       });
     }
 
-    const commaCount = (sentence.match(/,/g) ?? []).length;
+    // Thousands separators (£30,000) aren't clause-joining commas -- strip
+    // them before counting, or every salary figure trips this rule.
+    const commaCount = (sentence.replace(/(\d),(\d{3})/g, '$1$2').match(/,/g) ?? []).length;
     const hasAnd = /\band\b/i.test(sentence);
     if (commaCount >= 2 || (commaCount >= 1 && hasAnd)) {
       issues.push({
