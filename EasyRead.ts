@@ -49,7 +49,8 @@ export type EasyReadRule =
   | 'possible-passive-voice'
   | 'number-as-word'
   | 'precise-large-number'
-  | 'possible-jargon';
+  | 'possible-jargon'
+  | 'passage-too-long';
 
 export interface EasyReadIssue {
   rule: EasyReadRule;
@@ -129,6 +130,17 @@ const DEFAULT_JARGON_ALLOWLIST = [
 // "Use active and personal language".
 const PASSIVE_RE = /\b(is|are|was|were|been|being|be)\s+\w+ed\b/i;
 
+// Diagnostic finding (2026-09-13, Visual Explore dense-card investigation):
+// a passage can pass every per-sentence rule above and still read as a
+// dense paragraph if it chains enough individually-short, individually-
+// compliant sentences together. Two live careers confirmed as the "good"
+// reference length for a single Easy Read field: Cloud/DevOps Engineer (4
+// sentences) and Cybersecurity Analyst (5 sentences) — both card blurbs
+// that read as a short, scannable passage on screen. This threshold is a
+// hard fail, not advisory, since unlike possible-passive-voice there's no
+// ambiguity in a sentence count.
+const MAX_PASSAGE_SENTENCES = 5;
+
 function splitSentences(text: string): string[] {
   return text
     .split(/(?<=[.!?])\s+/)
@@ -153,7 +165,16 @@ export function checkEasyReadCompliance(text: string, glossary: EasyReadGlossary
     ...DEFAULT_JARGON_ALLOWLIST.map((t) => t.toLowerCase()),
   ]);
 
-  for (const sentence of splitSentences(text)) {
+  const sentences = splitSentences(text);
+  if (sentences.length > MAX_PASSAGE_SENTENCES) {
+    issues.push({
+      rule: 'passage-too-long',
+      detail: `Passage is ${sentences.length} sentences. Even when each sentence is individually compliant, chaining more than ${MAX_PASSAGE_SENTENCES} together reads as a dense paragraph rather than a short, scannable passage.`,
+      excerpt: text,
+    });
+  }
+
+  for (const sentence of sentences) {
     const wordCount = countWords(sentence);
 
     if (wordCount > 18) {
