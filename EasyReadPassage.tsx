@@ -28,18 +28,30 @@ export interface EasyReadChunk {
 export interface EasyReadPassageProps {
   text: string;
   chunks?: EasyReadChunk[];
-  /** Applied to each paragraph (flat or per-chunk). Its `color` is reused,
-   * dimmed, for chunk headings -- callers don't pass a separate heading colour. */
+  /** Applied to each paragraph (flat or per-chunk). */
   textStyle: React.CSSProperties;
+  /**
+   * Accent colour for each chunk's heading label and its left divider bar.
+   * Live feedback (2026-09-13): the original design reused textStyle.color
+   * at reduced opacity for headings, which read as barely-differentiated
+   * from the body text -- especially on a dark background, where a dimmed
+   * white heading and white body text are both just "white, slightly
+   * faded." Callers should pass a real accent (the same colour an adjacent
+   * "Why this fits"-style label already uses, if there is one) rather than
+   * relying on the textStyle-derived default, which only exists as a
+   * fallback for a caller that hasn't been given one yet.
+   */
+  headingColor?: string;
 }
 
-export default function EasyReadPassage({ text, chunks, textStyle }: EasyReadPassageProps) {
+export default function EasyReadPassage({ text, chunks, textStyle, headingColor }: EasyReadPassageProps) {
   if (chunks && chunks.length > 0) {
+    const accent = headingColor ?? (typeof textStyle.color === 'string' ? textStyle.color : '#8899AA');
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {chunks.map((chunk, i) => (
-          <div key={i}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', color: textStyle.color, opacity: 0.75, margin: '0 0 3px' }}>
+          <div key={i} style={{ borderLeft: `2px solid ${accent}`, paddingLeft: 12 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.6, textTransform: 'uppercase', color: accent, margin: '0 0 6px' }}>
               {chunk.heading}
             </p>
             <p style={{ ...textStyle, margin: 0 }}>{chunk.text}</p>
