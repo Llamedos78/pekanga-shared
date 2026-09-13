@@ -20,7 +20,8 @@
     "./SectorPicker": "./SectorPicker.tsx",
     "./LocationRadiusSearch": "./LocationRadiusSearch.tsx",
     "./EasyRead": "./EasyRead.ts",
-    "./ReportTabs": "./ReportTabs.tsx"
+    "./ReportTabs": "./ReportTabs.tsx",
+    "./StepWizardShell": "./StepWizardShell.tsx"
   },
   "files": [
     "tokens.js",
@@ -34,7 +35,8 @@
     "SectorPicker.tsx",
     "LocationRadiusSearch.tsx",
     "EasyRead.ts",
-    "ReportTabs.tsx"
+    "ReportTabs.tsx",
+    "StepWizardShell.tsx"
   ],
   "peerDependencies": {
     "react": ">=18",
