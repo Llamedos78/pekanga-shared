@@ -21,7 +21,8 @@
     "./LocationRadiusSearch": "./LocationRadiusSearch.tsx",
     "./EasyRead": "./EasyRead.ts",
     "./ReportTabs": "./ReportTabs.tsx",
-    "./StepWizardShell": "./StepWizardShell.tsx"
+    "./StepWizardShell": "./StepWizardShell.tsx",
+    "./EasyReadPassage": "./EasyReadPassage.tsx"
   },
   "files": [
     "tokens.js",
@@ -36,7 +37,8 @@
     "LocationRadiusSearch.tsx",
     "EasyRead.ts",
     "ReportTabs.tsx",
-    "StepWizardShell.tsx"
+    "StepWizardShell.tsx",
+    "EasyReadPassage.tsx"
   ],
   "peerDependencies": {
     "react": ">=18",
