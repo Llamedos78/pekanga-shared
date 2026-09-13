@@ -146,6 +146,12 @@ export default function CareerCard({ icon, title, description, salary, staticSal
         }
       }}
       style={{
+        // padding: 0 explicit (2026-09-14): this is a <div role="button">,
+        // not a native <button>, so it never had the unreset-UA-padding bug
+        // Visual Explore's real <button> cards had -- but set explicitly
+        // anyway now that content is split into two full-width child divs,
+        // so nothing about that bug class can resurface here silently.
+        padding: 0,
         background: tokens.white, border: `1.5px solid ${tokens.border}`,
         borderRadius: 12, overflow: 'hidden', transition: 'all 0.2s', cursor: 'pointer',
         display: 'flex', flexDirection: 'column', fontFamily: FONT,
@@ -161,12 +167,35 @@ export default function CareerCard({ icon, title, description, salary, staticSal
         (e.currentTarget as HTMLDivElement).style.borderColor = tokens.border;
       }}
     >
-      <div style={{ padding: 20, display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-          <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: 2, width: 20, height: 20 }}>{icon}</span>
-          <div style={{ fontSize: 15, fontWeight: 700, color: tokens.navy, lineHeight: 1.3, flex: 1 }}>{title}</div>
-        </div>
+      {/* Navy header band (2026-09-14, matching Visual Explore's grid
+          cards on both products): icon + title on navy-deep, everything
+          else on a gold-light body below, instead of one flat white card.
+          Fixed height (68px, same value Visual Explore settled on) plus a
+          2-line clamp on the title, not just minHeight -- a CSS Grid row
+          only stretches each card's outer height to match its tallest
+          sibling, not the header band inside it, so a 1-line title's
+          header would otherwise stay visibly shorter than a 2-line
+          title's header right next to it in the same row (the exact bug
+          hit and fixed twice on Visual Explore before landing on this
+          approach). Radius set explicitly on both header and body rather
+          than left to the parent's overflow:hidden clip alone -- that
+          clip is correct per spec but can leave a 1px anti-aliasing
+          sliver of the white card colour at the corner on some displays
+          (also hit and fixed on Visual Explore). 10.5px = this card's own
+          12px radius minus its 1.5px border, same relationship Visual
+          Explore's 14.5px has to its 16px/1.5px. */}
+      <div style={{
+        background: tokens.navyDeep, padding: '14px 20px', height: 68, boxSizing: 'border-box',
+        width: '100%', borderRadius: '10.5px 10.5px 0 0', display: 'flex', alignItems: 'center', gap: 10,
+      }}>
+        <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0, filter: 'brightness(0) invert(1)', width: 20, height: 20 }}>{icon}</span>
+        <span style={{
+          fontSize: 15, fontWeight: 700, color: tokens.white, lineHeight: 1.3,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+        }}>{title}</span>
+      </div>
 
+      <div style={{ background: tokens.goldLight, padding: 20, borderRadius: '0 0 10.5px 10.5px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         <p style={{ fontSize: 13, color: tokens.textMuted, lineHeight: 1.6, margin: '0 0 12px', flex: 1 }}>{description}</p>
 
         {demand ? (
