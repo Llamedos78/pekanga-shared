@@ -22,7 +22,8 @@
     "./EasyRead": "./EasyRead.ts",
     "./ReportTabs": "./ReportTabs.tsx",
     "./StepWizardShell": "./StepWizardShell.tsx",
-    "./EasyReadPassage": "./EasyReadPassage.tsx"
+    "./EasyReadPassage": "./EasyReadPassage.tsx",
+    "./useRotatingCareerFacts": "./useRotatingCareerFacts.ts"
   },
   "files": [
     "tokens.js",
@@ -38,7 +39,8 @@
     "EasyRead.ts",
     "ReportTabs.tsx",
     "StepWizardShell.tsx",
-    "EasyReadPassage.tsx"
+    "EasyReadPassage.tsx",
+    "useRotatingCareerFacts.ts"
   ],
   "peerDependencies": {
     "react": ">=18",
