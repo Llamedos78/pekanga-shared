@@ -39,12 +39,23 @@ export interface LocationRadiusValue {
   status: LocationRadiusStatus;
 }
 
-/** postcodes.io lookup — free, no API key. Returns null on any bad/unknown postcode. */
+/** Outward code only, e.g. "HP20", "SW1A", "M1", "EC1A" — no inward code/space. */
+const OUTCODE_ONLY_RE = /^[A-Z]{1,2}\d[A-Z\d]?$/;
+
+/**
+ * postcodes.io lookup — free, no API key. Returns null on any bad/unknown postcode.
+ * A full postcode (e.g. "HP20 1AB") is geocoded to its exact point via /postcodes/.
+ * An outward-code-only postcode (e.g. "HP20") is geocoded to its district centroid
+ * via /outcodes/ — postcodes.io's /postcodes/ endpoint 404s on outcodes alone, but
+ * most users searching near an area (not their own address) only know the outcode.
+ */
 export async function geocodePostcode(postcode: string): Promise<GeoPoint | null> {
   const trimmed = postcode.trim();
   if (!trimmed) return null;
+  const isOutcodeOnly = OUTCODE_ONLY_RE.test(trimmed.toUpperCase().replace(/\s+/g, ''));
+  const endpoint = isOutcodeOnly ? 'outcodes' : 'postcodes';
   try {
-    const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(trimmed)}`);
+    const res = await fetch(`https://api.postcodes.io/${endpoint}/${encodeURIComponent(trimmed)}`);
     if (!res.ok) return null;
     const data = await res.json();
     if (data?.status !== 200 || typeof data?.result?.latitude !== 'number' || typeof data?.result?.longitude !== 'number') {

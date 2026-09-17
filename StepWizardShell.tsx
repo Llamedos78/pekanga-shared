@@ -41,11 +41,16 @@ export interface StepWizardShellProps {
   onBack?: () => void;
   nextLabel?: string;
   nextDisabled?: boolean;
+  /** Shown as helper text under the Next button, and as its title/tooltip,
+   *  whenever nextDisabled is true — without this a disabled Next button
+   *  just goes grey with no indication of what's missing (found live 17 Sep
+   *  2026: a zero-client advisor hit this exact dead end on Subjects). */
+  nextDisabledReason?: string;
 }
 
 export default function StepWizardShell({
   stepIndex, totalSteps, title, subtitle, children,
-  onNext, onBack, nextLabel = 'Next →', nextDisabled = false,
+  onNext, onBack, nextLabel = 'Next →', nextDisabled = false, nextDisabledReason,
 }: StepWizardShellProps) {
   return (
     <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -73,11 +78,14 @@ export default function StepWizardShell({
             ← Back
           </button>
         )}
-        <button onClick={onNext} disabled={nextDisabled}
+        <button onClick={onNext} disabled={nextDisabled} title={nextDisabled ? nextDisabledReason : undefined}
           style={{ flex: onBack ? 2 : 1, padding: 14, background: nextDisabled ? 'var(--border)' : 'var(--coral)', color: nextDisabled ? 'var(--text-muted)' : '#fff', border: 'none', borderRadius: 10, fontFamily: 'var(--font-body)', fontSize: 16, fontWeight: 700, cursor: nextDisabled ? 'not-allowed' : 'pointer', transition: 'background 0.18s' }}>
           {nextLabel}
         </button>
       </div>
+      {nextDisabled && nextDisabledReason && (
+        <p style={{ fontSize: 12.5, color: 'var(--text-muted)', margin: '-12px 0 0', textAlign: 'right' }}>{nextDisabledReason}</p>
+      )}
     </div>
   );
 }
