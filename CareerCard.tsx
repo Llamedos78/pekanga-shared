@@ -26,6 +26,42 @@ import { tokens } from './tokens.js';
 
 const FONT = "'Sora', sans-serif";
 
+// Colourblind-safe (Okabe-Ito derived) tier palette, reconciled across
+// Advisor's own six independently-drifted copies on 3 Sep 2026 (see
+// CareerMatchCard.tsx's TIER_COLORS, the canonical source these values are
+// copied from verbatim) -- all pairs verified >=4.6:1 contrast at badge text
+// sizes. This is the first place School's Explore Careers uses this exact
+// palette too (School's other tier-colour surfaces -- RiskModal, its PDF
+// builder -- weren't in scope of that reconciliation and still carry their
+// own separate, unreconciled values; out of scope here as well).
+const TIER_COLORS: Record<string, { bg: string; fg: string }> = {
+  Resistant: { bg: '#E8F6F2', fg: '#007A59' },
+  Transforms: { bg: '#E6F3FA', fg: '#006FAD' },
+  Displaces: { bg: '#FDF1E3', fg: '#8F6300' },
+  Replaces: { bg: '#FBE9E3', fg: '#AC4C00' },
+  Creates: { bg: '#F7E9F1', fg: '#AD427D' },
+};
+
+/** Capitalised for display, matching every other tier-citing surface in the
+ *  product (report cards, chat guardrail text) -- storage/API convention is
+ *  lowercase (career-tier-lookup, career-tagging-report, riskcheck-report). */
+export type CareerCardTierLabel = 'Resistant' | 'Transforms' | 'Displaces' | 'Replaces' | 'Creates';
+
+function TierBadge({ tier }: { tier: CareerCardTierLabel }) {
+  const tc = TIER_COLORS[tier] || TIER_COLORS.Transforms;
+  return (
+    <span
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 5,
+        padding: '5px 12px', borderRadius: 100, fontSize: 11, fontWeight: 700,
+        letterSpacing: 1, textTransform: 'uppercase', background: tc.bg, color: tc.fg, fontFamily: FONT,
+      }}
+    >
+      {tier}
+    </span>
+  );
+}
+
 export interface CareerCardSalary {
   entry: string;
   mid: string;
@@ -53,6 +89,10 @@ export interface CareerCardProps {
   /** Single pre-baked salary string, shown when `salary` isn't available yet. */
   staticSalary?: string;
   demand?: CareerCardDemand;
+  /** Batch-classified AI-disruption tier, capitalised for display. Omit
+   *  while a career hasn't been classified yet (there is no "unclassified"
+   *  badge state -- the badge just doesn't render). */
+  tier?: CareerCardTierLabel;
   onOpenDetails: () => void;
 }
 
@@ -133,7 +173,7 @@ function SalaryRow({ salary }: { salary: CareerCardSalary }) {
   );
 }
 
-export default function CareerCard({ icon, title, description, salary, staticSalary, demand, onOpenDetails }: CareerCardProps) {
+export default function CareerCard({ icon, title, description, salary, staticSalary, demand, tier, onOpenDetails }: CareerCardProps) {
   return (
     <div
       role="button"
@@ -197,6 +237,12 @@ export default function CareerCard({ icon, title, description, salary, staticSal
 
       <div style={{ background: tokens.goldLight, padding: 20, borderRadius: '0 0 10.5px 10.5px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         <p style={{ fontSize: 13, color: tokens.textMuted, lineHeight: 1.6, margin: '0 0 12px', flex: 1 }}>{description}</p>
+
+        {tier ? (
+          <div style={{ marginBottom: 10 }}>
+            <TierBadge tier={tier} />
+          </div>
+        ) : null}
 
         {demand ? (
           <div style={{ marginBottom: 10 }}>
