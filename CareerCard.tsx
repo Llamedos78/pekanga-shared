@@ -71,6 +71,8 @@ export interface CareerCardSalary {
   sourceLabel: string;
   /** Adds a small "regional" chip next to the source line. */
   isRegional?: boolean;
+  /** The ONS occupation the figures are for, e.g. "ONS figure for: Train and tram drivers". Omitted or empty renders nothing. */
+  occupationLabel?: string;
 }
 
 export interface CareerCardDemand {
@@ -169,6 +171,9 @@ function SalaryRow({ salary }: { salary: CareerCardSalary }) {
         Source: {salary.sourceLabel}
         {salary.isRegional ? <span style={{ marginLeft: 4, color: tokens.blueMid, fontWeight: 600 }}>regional</span> : null}
       </div>
+      {salary.occupationLabel && salary.occupationLabel.trim() !== '' ? (
+        <div style={{ fontSize: 10, color: tokens.textMuted, marginTop: 2, fontFamily: FONT }}>{salary.occupationLabel}</div>
+      ) : null}
     </div>
   );
 }
