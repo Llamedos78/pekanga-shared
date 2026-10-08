@@ -67,7 +67,7 @@ export interface CareerCardSalary {
   mid: string;
   /** p90 "top earner" figure in whole pounds, e.g. 100000 for "£100,000+". */
   topEarner?: number | null;
-  /** e.g. "ONS ASHE 2025" or "Estimated · based on ONS ASHE data for similar roles". */
+  /** e.g. "ONS ASHE 2025" or "Estimated · no matching ONS figure for this job". */
   sourceLabel: string;
   /** Adds a small "regional" chip next to the source line. */
   isRegional?: boolean;
