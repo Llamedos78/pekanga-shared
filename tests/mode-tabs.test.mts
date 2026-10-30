@@ -4,7 +4,7 @@
 // the page), button mode (in-page state) and link mode (the app supplies its own link component).
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createElement, isValidElement, type ReactElement, type ReactNode } from 'react';
+import { createElement, isValidElement, type AnchorHTMLAttributes, type ReactElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import ModeTabs, { type ModeTabDef } from '../ModeTabs.tsx';
 
@@ -18,7 +18,7 @@ const TABS: ModeTabDef<Id>[] = [
 ];
 
 // Stand-in for next/link: an anchor that passes every prop through.
-function FakeLink({ href, children, ...rest }: { href: string; children?: ReactNode } & Record<string, unknown>) {
+function FakeLink({ href, children, ...rest }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
   return createElement('a', { href, ...rest }, children);
 }
 
